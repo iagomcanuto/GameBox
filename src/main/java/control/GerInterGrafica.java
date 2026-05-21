@@ -8,6 +8,7 @@ import java.awt.Frame;
 import java.lang.reflect.InvocationTargetException;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import org.hibernate.HibernateException;
 import viewer.DlgCadJogo;
 import viewer.DlgCadUser;
 import viewer.MainFrame;
@@ -22,17 +23,27 @@ public class GerInterGrafica {
     private UserFrame janUsuario = null;
     private DlgCadUser janCadUser = null;
     private DlgCadJogo janCadJogo = null;
+    private GerenciadorDominio gerDominio;
     
         // ## SINGLETON ###
     
     private static GerInterGrafica myInstance = new GerInterGrafica();
     
     private GerInterGrafica() {
-        
+        try {
+            gerDominio = new GerenciadorDominio();
+        } catch (HibernateException ex) {
+            JOptionPane.showMessageDialog(null, ex, "Inicializacao", JOptionPane.ERROR_MESSAGE);
+            System.exit(-1);
+        }
     }           
 
     public static GerInterGrafica getMyInstance() {
         return myInstance;
+    }
+
+    public GerenciadorDominio getGerenciadorDominio() {
+        return gerDominio;
     }
     
     // ### FIM do SINGLETON

@@ -4,6 +4,7 @@
  */
 package viewer;
 
+import dao.GenericDAO;
 import java.awt.Frame;
 import javax.swing.JOptionPane;
 import model.Usuario;
@@ -160,19 +161,30 @@ public class DlgCadUser extends javax.swing.JDialog {
     }//GEN-LAST:event_txtUserNameActionPerformed
 
     private void btnCancelarCadUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarCadUserActionPerformed
-        // TODO add your handling code here:
+        dispose();
     }//GEN-LAST:event_btnCancelarCadUserActionPerformed
 
     private void btnCadastrarUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarUserActionPerformed
-       String user = txtUserName.getText();
-       String nome = txtNome.getText();
+       String user = txtUserName.getText().trim();
+       String nome = txtNome.getText().trim();
+
+       if (nome.isEmpty() || user.isEmpty()) {
+           JOptionPane.showMessageDialog(rootPane, "Preencha nome e nome de usuario.");
+           return;
+       }
         
         if(novoUser == null){
             novoUser = new Usuario(nome,user);
         }
-        MainFrame main = (MainFrame) this.getOwner();
-        main.setTxtNomeCad1(user);
-        JOptionPane.showMessageDialog(rootPane, novoUser + " Cadastrado");
+        try {
+            new GenericDAO().salvar(novoUser);
+            MainFrame main = (MainFrame) this.getOwner();
+            main.setTxtNomeCad1(user);
+            JOptionPane.showMessageDialog(rootPane, novoUser + " cadastrado.");
+            dispose();
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(rootPane, "Erro ao cadastrar usuario: " + ex.getMessage());
+        }
         
     }//GEN-LAST:event_btnCadastrarUserActionPerformed
 

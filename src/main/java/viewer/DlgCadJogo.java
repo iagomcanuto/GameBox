@@ -4,6 +4,10 @@
  */
 package viewer;
 
+import dao.GenericDAO;
+import javax.swing.JOptionPane;
+import model.Jogo;
+
 /**
  *
  * @author iago_
@@ -127,6 +131,7 @@ public class DlgCadJogo extends javax.swing.JDialog {
         jScrollPane1.setViewportView(jTextArea1);
 
         btnCadastrarJogo.setText("Cadastrar");
+        btnCadastrarJogo.addActionListener(this::btnCadastrarJogoActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -161,6 +166,32 @@ public class DlgCadJogo extends javax.swing.JDialog {
     private void cmbAvaliacaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbAvaliacaoActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cmbAvaliacaoActionPerformed
+
+    private void btnCadastrarJogoActionPerformed(java.awt.event.ActionEvent evt) {
+        String nome = txtNomeJogo.getText().trim();
+
+        if (nome.isEmpty()) {
+            JOptionPane.showMessageDialog(rootPane, "Preencha o nome do jogo.");
+            return;
+        }
+
+        Jogo jogo = new Jogo(
+                nome,
+                txtPlataforma1.getText().trim(),
+                txtTempo.getText().trim(),
+                txtTempo1.getText().trim(),
+                String.valueOf(cmbAvaliacao.getSelectedItem()),
+                jTextArea1.getText().trim()
+        );
+
+        try {
+            new GenericDAO().salvar(jogo);
+            JOptionPane.showMessageDialog(rootPane, "Jogo cadastrado.");
+            dispose();
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(rootPane, "Erro ao cadastrar jogo: " + ex.getMessage());
+        }
+    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

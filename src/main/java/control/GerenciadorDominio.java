@@ -3,6 +3,7 @@ package control;
 import dao.ConexaoHibernate;
 import dao.GenericDAO;
 import java.util.List;
+import model.Jogo;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
@@ -18,11 +19,19 @@ public class GerenciadorDominio {
         genDAO = new GenericDAO();
     }
 
-    public List listar(Class classe) throws HibernateException {
+    public <T> List<T> listar(Class<T> classe) throws HibernateException {
         return genDAO.listar(classe);
     }
 
-    public Object get(Class classe, int id) throws HibernateException {
+    public List<Jogo> listarJogosDoUsuario(int idUsuario) throws HibernateException {
+        return genDAO.listarJogosDoUsuario(idUsuario);
+    }
+
+    public void inserirJogoDoUsuario(Jogo jogo, int idUsuario) throws HibernateException {
+        genDAO.inserirJogoDoUsuario(jogo, idUsuario);
+    }
+
+    public <T> T get(Class<T> classe, int id) throws HibernateException {
         return genDAO.get(classe, id);
     }
 

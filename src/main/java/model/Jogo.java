@@ -20,11 +20,9 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.CascadeType;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDate;
 
-/**
- *
- * @author iago_
- */
+
 @Entity
 public class Jogo implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -41,6 +39,12 @@ public class Jogo implements Serializable {
 
     @Column(name = "caminhoCapa", length = 255)
     private String caminhoCapa;
+
+    @Column(name = "tempoJogo", length = 30)
+    private String tempoJogo;
+
+    @Column(name = "dificuldade", length = 30)
+    private String dificuldade;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
@@ -72,7 +76,22 @@ public class Jogo implements Serializable {
     public Jogo(String nome, String plataforma, String tempoJogo, String dificuldade, String avaliacao, String comentario) {
         this.titulo = nome;
         this.plataforma = plataforma == null || plataforma.isBlank() ? null : new Plataforma(plataforma, "");
+        this.tempoJogo = tempoJogo;
+        this.dificuldade = dificuldade;
         this.status = StatusProgresso.BACKLOG;
+
+        int nota = 0;
+        if (avaliacao != null && !avaliacao.isBlank()) {
+            try {
+                nota = Integer.parseInt(avaliacao.trim());
+            } catch (NumberFormatException ignored) {
+                nota = 0;
+            }
+        }
+        // Mantém compatibilidade com a UI atual (avaliação + comentário) usando RegistroZerado.
+        this.registroZerado = (comentario == null || comentario.isBlank()) && nota == 0
+                ? null
+                : new RegistroZerado((LocalDate) null, nota, comentario);
     }
 
     public Jogo(String titulo, int anoLancamento, String caminhoCapa, StatusProgresso status) {
@@ -112,6 +131,22 @@ public class Jogo implements Serializable {
 
     public void setCaminhoCapa(String caminhoCapa) {
         this.caminhoCapa = caminhoCapa;
+    }
+
+    public String getTempoJogo() {
+        return tempoJogo;
+    }
+
+    public void setTempoJogo(String tempoJogo) {
+        this.tempoJogo = tempoJogo;
+    }
+
+    public String getDificuldade() {
+        return dificuldade;
+    }
+
+    public void setDificuldade(String dificuldade) {
+        this.dificuldade = dificuldade;
     }
 
     public StatusProgresso getStatus() {

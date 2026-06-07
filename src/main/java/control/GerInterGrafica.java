@@ -6,24 +6,25 @@ package control;
 
 import java.awt.Frame;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import org.hibernate.HibernateException;
+import model.Usuario;
 import viewer.DlgCadJogo;
 import viewer.DlgCadUser;
 import viewer.MainFrame;
 import viewer.UserFrame;
 
-/**
- *
- * @author iago_
- */
+
 public class GerInterGrafica {
     private MainFrame janPrinc = null;
     private UserFrame janUsuario = null;
     private DlgCadUser janCadUser = null;
     private DlgCadJogo janCadJogo = null;
     private GerenciadorDominio gerDominio;
+
+    private Usuario usuarioAtual;
     
         // ## SINGLETON ###
     
@@ -44,6 +45,28 @@ public class GerInterGrafica {
 
     public GerenciadorDominio getGerenciadorDominio() {
         return gerDominio;
+    }
+
+    public Usuario getUsuarioAtual() {
+        return usuarioAtual;
+    }
+
+    public void setUsuarioAtual(Usuario usuarioAtual) {
+        this.usuarioAtual = usuarioAtual;
+    }
+
+    public Usuario buscarUsuarioPorLogin(String login) throws HibernateException {
+        if (login == null || login.isBlank()) {
+            return null;
+        }
+
+        List<Usuario> usuarios = gerDominio.listar(Usuario.class);
+        for (Usuario u : usuarios) {
+            if (u != null && login.equals(u.getApelido())) {
+                return u;
+            }
+        }
+        return null;
     }
     
     // ### FIM do SINGLETON
@@ -72,15 +95,25 @@ public class GerInterGrafica {
     }
     
     public void abrirCadJogo() {
-        abrirJanela(janPrinc, janCadJogo, DlgCadJogo.class);
+        Frame parent = janPrinc;
+        if (janUsuario != null && janUsuario.isVisible()) {
+            parent = janUsuario;
+        }
+        abrirJanela(parent, janCadJogo, DlgCadJogo.class);
     }
     
-     public void abrirUser() {
-        if ( janUsuario == null) {
+     public void abrirUser(Usuario usuario) {
+        if (janUsuario == null) {
             janUsuario = new UserFrame();
         }
+        setUsuarioAtual(usuario);
+        janUsuario.setUsuario(usuario);
         janPrinc.setVisible(false);
         janUsuario.setVisible(true);
+    }
+
+    public void abrirUser() {
+        abrirUser(usuarioAtual);
     }
      
      public void fecharUser() {
@@ -115,7 +148,6 @@ public class GerInterGrafica {
         javax.swing.UIManager.put("OptionPane.cancelButtonText", "Cancelar");
         
         
-        /* Create and display the form */
         GerInterGrafica.getMyInstance().abrirPrincipal();
     }
 }

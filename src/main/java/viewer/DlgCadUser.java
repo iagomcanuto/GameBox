@@ -4,29 +4,29 @@
  */
 package viewer;
 
-import dao.GenericDAO;
 import java.awt.Frame;
 import javax.swing.JOptionPane;
+import org.hibernate.HibernateException;
+import control.GerInterGrafica;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.border.BevelBorder;
+import model.Avatar;
 import model.Usuario;
 
-/**
- *
- * @author iago_
- */
+
 public class DlgCadUser extends javax.swing.JDialog {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DlgCadUser.class.getName());
 
-    /**
-     * Creates new form dlgCadUser
-     */
     private Usuario novoUser = null ;
+    private Avatar avatar = null;
     public DlgCadUser(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        
+
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -52,7 +52,7 @@ public class DlgCadUser extends javax.swing.JDialog {
 
         pnlCadastroUser.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder("Cadastre-se ")));
 
-        lblUserName.setText("Nome de Usuário");
+        lblUserName.setText("Apelido");
 
         txtUserName.addActionListener(this::txtUserNameActionPerformed);
 
@@ -63,17 +63,18 @@ public class DlgCadUser extends javax.swing.JDialog {
         pnlCadastroUserLayout.setHorizontalGroup(
             pnlCadastroUserLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlCadastroUserLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlCadastroUserLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(pnlCadastroUserLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlCadastroUserLayout.createSequentialGroup()
-                        .addComponent(lblUserName)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap()
+                        .addComponent(lblNome))
                     .addGroup(pnlCadastroUserLayout.createSequentialGroup()
-                        .addComponent(lblNome)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtNome)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(25, 25, 25)
+                        .addComponent(lblUserName)))
+                .addGap(18, 18, 18)
+                .addGroup(pnlCadastroUserLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(163, Short.MAX_VALUE))
         );
         pnlCadastroUserLayout.setVerticalGroup(
             pnlCadastroUserLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -91,9 +92,21 @@ public class DlgCadUser extends javax.swing.JDialog {
 
         pnlAvatar.setBorder(javax.swing.BorderFactory.createTitledBorder("Escolha seu Avatar"));
 
-        lblAvatar2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guerreiropng (1).png"))); // NOI18N
+        lblAvatar2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/arqueiro.png"))); // NOI18N
+        lblAvatar2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        lblAvatar2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblAvatar2MouseClicked(evt);
+            }
+        });
 
-        lblAvatar1.setIcon(new javax.swing.ImageIcon("C:\\Users\\iago_\\Documents\\NetBeansProjects\\GameBox\\src\\main\\resources\\guerreiropng (1).png")); // NOI18N
+        lblAvatar1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Guerreiro.png"))); // NOI18N
+        lblAvatar1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        lblAvatar1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblAvatar1MouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout pnlAvatarLayout = new javax.swing.GroupLayout(pnlAvatar);
         pnlAvatar.setLayout(pnlAvatarLayout);
@@ -102,7 +115,7 @@ public class DlgCadUser extends javax.swing.JDialog {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlAvatarLayout.createSequentialGroup()
                 .addGap(52, 52, 52)
                 .addComponent(lblAvatar1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 101, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblAvatar2)
                 .addGap(89, 89, 89))
         );
@@ -167,30 +180,52 @@ public class DlgCadUser extends javax.swing.JDialog {
     private void btnCadastrarUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarUserActionPerformed
        String user = txtUserName.getText().trim();
        String nome = txtNome.getText().trim();
-
        if (nome.isEmpty() || user.isEmpty()) {
-           JOptionPane.showMessageDialog(rootPane, "Preencha nome e nome de usuario.");
+           JOptionPane.showMessageDialog(rootPane, "Preencha Nome Completo e Apelido.");
            return;
        }
-        
+       if (avatar == null) {
+           JOptionPane.showMessageDialog(rootPane, "Escolha um avatar.");
+           return;
+       }
         if(novoUser == null){
-            novoUser = new Usuario(nome,user);
+            novoUser = new Usuario(nome,user,avatar);
         }
         try {
-            new GenericDAO().salvar(novoUser);
+            GerInterGrafica.getMyInstance().getGerenciadorDominio().inserir(novoUser);
             MainFrame main = (MainFrame) this.getOwner();
-            main.setTxtNomeCad1(user);
+            main.carregarUsuariosCadastrados();
             JOptionPane.showMessageDialog(rootPane, novoUser + " cadastrado.");
             dispose();
-        } catch (RuntimeException ex) {
+        } catch (HibernateException ex) {
             JOptionPane.showMessageDialog(rootPane, "Erro ao cadastrar usuario: " + ex.getMessage());
         }
-        
+
     }//GEN-LAST:event_btnCadastrarUserActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    private void lblAvatar1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblAvatar1MouseClicked
+        this.selecionarAvatar(lblAvatar1);
+        if (avatar != Avatar.GUERREIRO){
+            avatar = Avatar.GUERREIRO;
+        }
+    }//GEN-LAST:event_lblAvatar1MouseClicked
+
+    private void lblAvatar2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblAvatar2MouseClicked
+        this.selecionarAvatar(lblAvatar2);
+        if (avatar != Avatar.ARQUEIRO){
+            avatar = Avatar.ARQUEIRO;
+        }
+    }//GEN-LAST:event_lblAvatar2MouseClicked
+
+    private void selecionarAvatar(JLabel labelSelecionado) {
+        javax.swing.border.Border bordaPadrao = BorderFactory.createBevelBorder(BevelBorder.RAISED);
+
+        lblAvatar1.setBorder(bordaPadrao);
+        lblAvatar2.setBorder(bordaPadrao);
+
+        labelSelecionado.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+
+}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCadastrarUser;

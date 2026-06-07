@@ -4,14 +4,14 @@
  */
 package viewer;
 
-import dao.GenericDAO;
 import javax.swing.JOptionPane;
+import javax.swing.DefaultComboBoxModel;
+import org.hibernate.HibernateException;
+import control.GerInterGrafica;
 import model.Jogo;
+import model.Usuario;
 
-/**
- *
- * @author iago_
- */
+
 public class DlgCadJogo extends javax.swing.JDialog {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DlgCadJogo.class.getName());
@@ -22,6 +22,18 @@ public class DlgCadJogo extends javax.swing.JDialog {
     public DlgCadJogo(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        carregarComboAvaliacao();
+        carregarComboDificuldade();
+    }
+
+    private void carregarComboAvaliacao() {
+        cmbAvaliacao.setModel(new DefaultComboBoxModel<>(new String[]{"1", "2", "3", "4", "5"}));
+    }
+
+    private void carregarComboDificuldade() {
+        cmbDificuldade.setModel(new DefaultComboBoxModel<>(
+                new String[]{"Muito Facil", "Facil", "Medio", "Dificil", "Muito Dificil"}
+        ));
     }
 
     /**
@@ -40,7 +52,7 @@ public class DlgCadJogo extends javax.swing.JDialog {
         lblAvaliacao = new javax.swing.JLabel();
         txtTempo = new javax.swing.JTextField();
         txtPlataforma1 = new javax.swing.JTextField();
-        txtTempo1 = new javax.swing.JTextField();
+        cmbDificuldade = new javax.swing.JComboBox<>();
         lblNomeJogo = new javax.swing.JLabel();
         txtNomeJogo = new javax.swing.JTextField();
         cmbAvaliacao = new javax.swing.JComboBox<>();
@@ -78,7 +90,7 @@ public class DlgCadJogo extends javax.swing.JDialog {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(lblDificuldade)
                                 .addGap(36, 36, 36)
-                                .addComponent(txtTempo1, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(cmbDificuldade, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(lblTempoJogo)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -120,7 +132,7 @@ public class DlgCadJogo extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblDificuldade)
-                    .addComponent(txtTempo1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cmbDificuldade, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(9, 9, 9))
         );
 
@@ -179,16 +191,25 @@ public class DlgCadJogo extends javax.swing.JDialog {
                 nome,
                 txtPlataforma1.getText().trim(),
                 txtTempo.getText().trim(),
-                txtTempo1.getText().trim(),
+                String.valueOf(cmbDificuldade.getSelectedItem()),
                 String.valueOf(cmbAvaliacao.getSelectedItem()),
                 jTextArea1.getText().trim()
         );
 
         try {
-            new GenericDAO().salvar(jogo);
+            Usuario usuarioAtual = GerInterGrafica.getMyInstance().getUsuarioAtual();
+            if (usuarioAtual == null) {
+                JOptionPane.showMessageDialog(rootPane, "Nenhum usuário selecionado. Volte e escolha um usuário.");
+                return;
+            }
+
+            // Salva via usuário para garantir o vínculo na biblioteca
+            GerInterGrafica.getMyInstance()
+                    .getGerenciadorDominio()
+                    .inserirJogoDoUsuario(jogo, usuarioAtual.getIdUsuario());
             JOptionPane.showMessageDialog(rootPane, "Jogo cadastrado.");
             dispose();
-        } catch (RuntimeException ex) {
+        } catch (HibernateException ex) {
             JOptionPane.showMessageDialog(rootPane, "Erro ao cadastrar jogo: " + ex.getMessage());
         }
     }
@@ -197,6 +218,7 @@ public class DlgCadJogo extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCadastrarJogo;
     private javax.swing.JComboBox<String> cmbAvaliacao;
+    private javax.swing.JComboBox<String> cmbDificuldade;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
@@ -208,6 +230,5 @@ public class DlgCadJogo extends javax.swing.JDialog {
     private javax.swing.JTextField txtNomeJogo;
     private javax.swing.JTextField txtPlataforma1;
     private javax.swing.JTextField txtTempo;
-    private javax.swing.JTextField txtTempo1;
     // End of variables declaration//GEN-END:variables
 }

@@ -75,7 +75,7 @@
                               <Group type="102" attributes="0">
                                   <Component id="lblDificuldade" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
-                                  <Component id="txtTempo1" min="-2" pref="119" max="-2" attributes="0"/>
+                                  <Component id="cmbDificuldade" min="-2" pref="119" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" attributes="0">
                                   <Component id="lblTempoJogo" min="-2" max="-2" attributes="0"/>
@@ -133,7 +133,7 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="lblDificuldade" min="-2" max="-2" attributes="0"/>
-                      <Component id="txtTempo1" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="cmbDificuldade" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
               </Group>
@@ -165,7 +165,21 @@
         </Component>
         <Component class="javax.swing.JTextField" name="txtPlataforma1">
         </Component>
-        <Component class="javax.swing.JTextField" name="txtTempo1">
+        <Component class="javax.swing.JComboBox" name="cmbDificuldade">
+          <Properties>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+              <StringArray count="5">
+                <StringItem index="0" value="Muito Facil"/>
+                <StringItem index="1" value="Facil"/>
+                <StringItem index="2" value="Medio"/>
+                <StringItem index="3" value="Dificil"/>
+                <StringItem index="4" value="Muito Dificil"/>
+              </StringArray>
+            </Property>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+          </AuxValues>
         </Component>
         <Component class="javax.swing.JLabel" name="lblNomeJogo">
           <Properties>

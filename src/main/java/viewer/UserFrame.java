@@ -5,11 +5,14 @@
 package viewer;
 
 import control.GerInterGrafica;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import model.Jogo;
+import model.Usuario;
+import org.hibernate.HibernateException;
 
-/**
- *
- * @author iago_
- */
+
 public class UserFrame extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(UserFrame.class.getName());
@@ -17,8 +20,40 @@ public class UserFrame extends javax.swing.JFrame {
     /**
      * Creates new form UserFrame
      */
+    private Usuario usuario;
+
     public UserFrame() {
         initComponents();
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+        carregarTabelaJogos();
+    }
+
+    private void carregarTabelaJogos() {
+        DefaultTableModel model = (DefaultTableModel) tblJogosUser.getModel();
+        model.setRowCount(0);
+
+        if (usuario == null) {
+            return;
+        }
+
+        try {
+            List<Jogo> jogos = GerInterGrafica.getMyInstance()
+                    .getGerenciadorDominio()
+                    .listarJogosDoUsuario(usuario.getIdUsuario());
+
+            for (Jogo j : jogos) {
+                String plataforma = j.getPlataforma() != null ? j.getPlataforma().getNome() : "";
+                String tempoConclusao = j.getTempoJogo() != null ? j.getTempoJogo() : "";
+                String dificuldade = j.getDificuldade() != null ? j.getDificuldade() : "";
+                String avaliacao = j.getRegistroZerado() != null ? String.valueOf(j.getRegistroZerado().getNotaPessoal()) : "";
+                model.addRow(new Object[]{j.getTitulo(), plataforma, tempoConclusao, dificuldade, avaliacao});
+            }
+        } catch (HibernateException ex) {
+            JOptionPane.showMessageDialog(rootPane, "Erro ao carregar jogos do usuário: " + ex.getMessage());
+        }
     }
 
     /**
@@ -143,7 +178,9 @@ public class UserFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btnAdicionarJogoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarJogoActionPerformed
-        GerInterGrafica.getMyInstance().abrirCadJogo();// TODO add your handling code here:
+        GerInterGrafica.getMyInstance().abrirCadJogo();
+        // o dialog é modal; ao voltar, recarrega tabela
+        carregarTabelaJogos();
     }//GEN-LAST:event_btnAdicionarJogoActionPerformed
 
 

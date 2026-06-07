@@ -5,21 +5,30 @@
 package viewer;
 
 import control.GerInterGrafica;
+import java.util.List;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
+import model.Avatar;
+import model.Usuario;
+import org.hibernate.HibernateException;
+import javax.swing.JOptionPane;
+import javax.swing.border.BevelBorder;
 
-/**
- *
- * @author iago_
- */
+
 public class MainFrame extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainFrame.class.getName());
+    private final Usuario[] usuariosExibidos = new Usuario[3];
 
     /**
      * Creates new form mainFrame
      */
     public MainFrame() {
         initComponents();
+        configurarCliquesUsuarios();
+        carregarUsuariosCadastrados();
     }
 
     /**
@@ -37,8 +46,8 @@ public class MainFrame extends javax.swing.JFrame {
         lblUsercad3 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         txtNomeCad1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
+        txtNomeCad2 = new javax.swing.JTextField();
+        txtNomeCad3 = new javax.swing.JTextField();
         lblGameboxMain = new javax.swing.JLabel();
         menuPrincipal = new javax.swing.JMenuBar();
         menuCadastro = new javax.swing.JMenu();
@@ -49,30 +58,36 @@ public class MainFrame extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Quem é você?"));
 
-        lblUsercad1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guerreiropng (1).png"))); // NOI18N
-        lblUsercad1.setText("jLabel1");
-        lblUsercad1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        lblUsercad1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/arqueiro.png"))); // NOI18N
+        lblUsercad1.setText("");
         lblUsercad1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 lblUsercad1MouseClicked(evt);
             }
         });
+        lblUsercad1.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+                lblUsercad1CaretPositionChanged(evt);
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+                lblUsercad1InputMethodTextChanged(evt);
+            }
+        });
 
-        lblUsercad2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guerreiropng (1).png"))); // NOI18N
-        lblUsercad2.setText("jLabel2");
+        lblUsercad2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/arqueiro.png"))); // NOI18N
+        lblUsercad2.setText("");
 
-        lblUsercad3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guerreiropng (1).png"))); // NOI18N
-        lblUsercad3.setText("jLabel3");
+        lblUsercad3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Guerreiro.png"))); // NOI18N
+        lblUsercad3.setText("");
 
         jButton1.setText("Outro");
 
-        txtNomeCad1.setText("Nome Cadastrado");
         txtNomeCad1.setEnabled(false);
         txtNomeCad1.addActionListener(this::txtNomeCad1ActionPerformed);
 
-        jTextField2.setEnabled(false);
+        txtNomeCad2.setEnabled(false);
 
-        jTextField3.setEnabled(false);
+        txtNomeCad3.setEnabled(false);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -83,17 +98,17 @@ public class MainFrame extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(30, 30, 30)
                         .addComponent(lblUsercad1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGap(15, 15, 15)
-                        .addComponent(txtNomeCad1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(lblUsercad2, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField2))
-                .addGap(45, 45, 45)
+                        .addComponent(txtNomeCad1, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtNomeCad2, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblUsercad2, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(30, 30, 30)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(lblUsercad3, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField3))
+                    .addComponent(txtNomeCad3))
                 .addGap(30, 30, 30))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
@@ -109,8 +124,8 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(lblUsercad3, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtNomeCad3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtNomeCad2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtNomeCad1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jButton1))
@@ -165,20 +180,110 @@ public class MainFrame extends javax.swing.JFrame {
         this.txtNomeCad1.setText(t);
     }
 
+    public void carregarUsuariosCadastrados() {
+        try {
+            List<Usuario> usuarios = GerInterGrafica.getMyInstance().getGerenciadorDominio().listar(Usuario.class);
+            preencherUsuario(0, usuarios.size() > 0 ? usuarios.get(0) : null);
+            preencherUsuario(1, usuarios.size() > 1 ? usuarios.get(1) : null);
+            preencherUsuario(2, usuarios.size() > 2 ? usuarios.get(2) : null);
+        } catch (HibernateException ex) {
+            JOptionPane.showMessageDialog(rootPane, "Erro ao carregar usuarios: " + ex.getMessage());
+        }
+    }
+
+    private void configurarCliquesUsuarios() {
+        lblUsercad2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                abrirUsuarioSelecionado(1);
+            }
+        });
+        lblUsercad3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                abrirUsuarioSelecionado(2);
+            }
+        });
+    }
+
+    private void preencherUsuario(int posicao, Usuario usuario) {
+        usuariosExibidos[posicao] = usuario;
+        campoUsuario(posicao).setText(usuario == null ? "" : usuario.getApelido());
+
+        JLabel label = labelUsuario(posicao);
+        if (usuario == null) {
+            label.setIcon(null);
+            label.setBorder(null);
+            return;
+        }
+
+        label.setIcon(new ImageIcon(getClass().getResource(caminhoImagemAvatar(usuario.getAvatar()))));
+        label.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+    }
+
+    private JTextField campoUsuario(int posicao) {
+        return switch (posicao) {
+            case 0 -> txtNomeCad1;
+            case 1 -> txtNomeCad2;
+            default -> txtNomeCad3;
+        };
+    }
+
+    private JLabel labelUsuario(int posicao) {
+        return switch (posicao) {
+            case 0 -> lblUsercad1;
+            case 1 -> lblUsercad2;
+            default -> lblUsercad3;
+        };
+    }
+
+    private String caminhoImagemAvatar(Avatar avatar) {
+        if (avatar == Avatar.GUERREIRO) {
+            return "/Guerreiro.png";
+        }
+        return "/arqueiro.png";
+    }
+
     private void itMenuUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itMenuUsuarioActionPerformed
         GerInterGrafica.getMyInstance().abrirCadUser();
     }//GEN-LAST:event_itMenuUsuarioActionPerformed
 
     private void lblUsercad1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblUsercad1MouseClicked
-        GerInterGrafica.getMyInstance().abrirUser();
+        abrirUsuarioSelecionado(0);
     }//GEN-LAST:event_lblUsercad1MouseClicked
+
+    private void abrirUsuarioSelecionado(int posicao) {
+        Usuario usuario = usuariosExibidos[posicao];
+        String login = campoUsuario(posicao).getText() == null ? "" : campoUsuario(posicao).getText().trim();
+        if (login.isEmpty()) {
+            JOptionPane.showMessageDialog(rootPane, "Selecione/cadastre um usuário primeiro.");
+            return;
+        }
+
+        try {
+            if (usuario == null) {
+                usuario = GerInterGrafica.getMyInstance().buscarUsuarioPorLogin(login);
+            }
+            if (usuario == null) {
+                JOptionPane.showMessageDialog(rootPane, "Usuário não encontrado no banco: " + login);
+                return;
+            }
+            GerInterGrafica.getMyInstance().abrirUser(usuario);
+        } catch (HibernateException ex) {
+            JOptionPane.showMessageDialog(rootPane, "Erro ao buscar usuário: " + ex.getMessage());
+        }
+    }
+
+    private void lblUsercad1InputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_lblUsercad1InputMethodTextChanged
+
+    }//GEN-LAST:event_lblUsercad1InputMethodTextChanged
+
+    private void lblUsercad1CaretPositionChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_lblUsercad1CaretPositionChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_lblUsercad1CaretPositionChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem itMenuUsuario;
     private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
     private javax.swing.JLabel lblGameboxMain;
     private javax.swing.JLabel lblUsercad1;
     private javax.swing.JLabel lblUsercad2;
@@ -186,5 +291,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenu menuCadastro;
     private javax.swing.JMenuBar menuPrincipal;
     private javax.swing.JTextField txtNomeCad1;
+    private javax.swing.JTextField txtNomeCad2;
+    private javax.swing.JTextField txtNomeCad3;
     // End of variables declaration//GEN-END:variables
 }

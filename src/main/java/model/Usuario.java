@@ -10,19 +10,17 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 
-/**
- *
- * @author iago_
- */
 @Entity
 public class Usuario implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idUsuario;
@@ -30,18 +28,31 @@ public class Usuario implements Serializable {
     @Column(name = "nome", nullable = false, length = 120)
     private String nome;
 
-    @Column(name = "senha", nullable = false, length = 120)
-    private String senha;
+    @Column(name = "apelido", nullable = false, length = 120)
+    private String apelido;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Jogo> biblioteca = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "avatar", nullable = false, length = 20)
+    private Avatar avatar;
+
+    public Avatar getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(Avatar avatar) {
+        this.avatar = avatar;
+    }
+
     public Usuario() {
     }
 
-    public Usuario(String nome, String senha) {
+    public Usuario(String nome, String apelido, Avatar avatar ) {
         this.nome = nome;
-        this.senha = senha;
+        this.apelido = apelido;
+        this.avatar = avatar;
     }
 
     public int getIdUsuario() {
@@ -58,14 +69,6 @@ public class Usuario implements Serializable {
 
     public void setNome(String nome) {
         this.nome = nome;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
     }
 
     public List<Jogo> getBiblioteca() {
@@ -107,5 +110,13 @@ public class Usuario implements Serializable {
     public String toString() {
         return "Usuario " + nome;
     }
-    
+
+    public String getApelido() {
+        return apelido;
+    }
+
+    public void setApelido(String apelido) {
+        this.apelido = apelido;
+    }
+
 }
